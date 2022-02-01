@@ -312,5 +312,20 @@ public class BSViewer extends Application {
             bsArrays.add(array);
         }
     }
+
+    private static ArrayList<String> moveParse(String move) {
+        // When we encounter a t/T, we split and add to the array list
+        ArrayList<String> movesList = new ArrayList<String>(move.length()/2); // too generous?
+        int start = 0;
+
+        for (int i = 0; i < move.length(); i ++) {
+            if (move.charAt(i) == 't' || move.charAt(i) == 'T') {
+                movesList.add(move.substring(start,i + 1));
+                start = i + 1;
+            }
+        }
+
+        return movesList;
+    }
 }
 
