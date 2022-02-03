@@ -33,6 +33,7 @@ import javafx.stage.Stage;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.prefs.AbstractPreferences;
 
 public class BSViewer extends Application {
@@ -142,6 +143,7 @@ public class BSViewer extends Application {
         int nextMod; // the mod of the next line (replace with an if statement in the drawBS method?
 
         ArrayList<int[]> bsArrays = new ArrayList<>();
+        ArrayList<Integer> zeroLocation = new ArrayList<>();
         ArrayList<String> movesString = new ArrayList<>(); // will be bsArray.length - 1
         ArrayList<Integer> movesOffset = new ArrayList<>(); // will be bsArray.length - 1
 
@@ -242,15 +244,15 @@ public class BSViewer extends Application {
 
             showVerticalLine = false;
 
-            for (int[] coordinates: bsArrays) {
+            for (int[] coordinates: bsArrays) { // change to int i and use zeroLocation and other arrays
                 drawLines(lineY, tickOffsetX, tickSpacing, coordinates, arrayIndex);
 
                 showVerticalLine = true; // true after the first line is drawn
                 double currentTickOffset =  (arrayIndex % nextMod) * tickSpacing; // previous line spacing for a horobrick in pixels
-                arrayIndex = 2 + (arrayIndex / nextMod) * currentMod + (int) Math.ceil(((arrayIndex % nextMod) * currentMod) / (double) nextMod);
+                arrayIndex = (arrayIndex / nextMod) * currentMod + (int) Math.ceil(((arrayIndex % nextMod) * currentMod) / (double) nextMod);
                 lineY += lineSpacing;
                 tickSpacing *= tickSpacingScaling;
-                tickOffsetX = tickOffsetX + (arrayIndex - 2 % currentMod) * tickSpacing - currentTickOffset;
+                tickOffsetX = tickOffsetX + (arrayIndex % currentMod) * tickSpacing - currentTickOffset;
             }
         }
 
@@ -334,23 +336,30 @@ public class BSViewer extends Application {
         }
 
         public void addArray(int[] array) {
-            bsArrays.add(array);
+            // first two integers are the location of the first and last zero
+            zeroLocation.add(array[0]);
+            bsArrays.add(Arrays.copyOfRange(array, 2, array.length));
         }
     }
 
-    private static ArrayList<String> moveParse(String move) {
+    private static ArrayList<String> pathParse(String path) {
         // When we encounter a t/T, we split and add to the array list
-        ArrayList<String> movesList = new ArrayList<String>(move.length()/2); // too generous?
+        ArrayList<String> movesList = new ArrayList<String>(path.length()/2); // too generous?
         int start = 0;
 
-        for (int i = 0; i < move.length(); i ++) {
-            if (move.charAt(i) == 't' || move.charAt(i) == 'T') {
-                movesList.add(move.substring(start,i + 1));
+        for (int i = 0; i < path.length(); i ++) {
+            if (path.charAt(i) == 't' || path.charAt(i) == 'T') {
+                movesList.add(path.substring(start,i + 1));
                 start = i + 1;
             }
         }
 
         return movesList;
+    }
+
+    private static int moveOffset(String move) {
+        // count number of b's or B's
+        return 0;
     }
 }
 
