@@ -13,7 +13,7 @@ This version includes lastRadiusPosition function at the end
 
 import java.util.Scanner;
 
-public class BS_bricklaying {
+public class BS_Bricklaying {
     public static void main(String[] args) {
         // Add system args option and default to userMenu
 

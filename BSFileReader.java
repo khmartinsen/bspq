@@ -10,13 +10,17 @@ BTTBT.bsp_q
 
  */
 
+
 import java.io.*;
 import java.util.ArrayList;
+
+
+// print when we skip a part of the file due to something not being an integer
 
 public final class BSFileReader {
     private BSFileReader(){}
 
-    public static int[] fileToArray(final int p, final int q, final String movesString, String directory) {
+    public static int[] fileToArray(final int p, final int q, final String movesString, String directory) throws IOException {
         ArrayList<Integer> arrayList = new ArrayList<>();
         try (
                 BufferedReader input = new BufferedReader(new FileReader(directory + "BS" + p + "_" + q + "/" + movesString));
@@ -26,13 +30,14 @@ public final class BSFileReader {
                 arrayList.add(Integer.parseInt(line));
                 line = input.readLine();
             }
+            // throw an empty array exception with file name
         }
-        catch (FileNotFoundException ex){
-            System.out.println("File " + movesString + " does not exist in folder BS" + p + "_" + q + ".");
-            return null;
+        catch (NumberFormatException ex){
+            System.out.println("Integer not found");
         }
-        catch (IOException ex) {
-            ex.printStackTrace();
+
+        if (arrayList.isEmpty()) {
+            throw new IOException("No integers in file BS" + p + "_" + q + "/" + movesString);
         }
 
         return arrayList.stream().mapToInt(i->i).toArray();

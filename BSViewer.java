@@ -17,6 +17,7 @@ If files do not exist, ask if we want to generate them.
 
 import javafx.application.Application;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -28,7 +29,11 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.prefs.AbstractPreferences;
 
 public class BSViewer extends Application {
     int p; // move these into BSPane?
@@ -41,8 +46,11 @@ public class BSViewer extends Application {
     @Override
     public void start(Stage primaryStage) {
 
-        // initial input for p, q, and array files
-        VBox vbox = new VBox();
+
+        BorderPane borderPane = new BorderPane();
+        VBox tfVbox = new VBox();
+        borderPane.setCenter(tfVbox);
+
 
         HBox pqEntries = new HBox();
         pqEntries.setAlignment(Pos.CENTER);
@@ -50,25 +58,45 @@ public class BSViewer extends Application {
         TextField pEntry = new TextField("p");
         TextField qEntry = new TextField("q");
         pqEntries.getChildren().addAll(pEntry,qEntry);
-        vbox.getChildren().addAll(pqEntries);
+        borderPane.setTop(pqEntries);
 
-        // set directory to look in then automatically open files based on BBBTBT? path?
+        Text folderLocation = new Text("Looking in folder BSP_Q relative to where this program's location.");
 
         TextField file1 = new TextField();
-        file1.setPromptText("Path");
+        file1.setPromptText("File 1");
 
         TextField file2 = new TextField();
         file2.setPromptText("File 2");
 
+        tfVbox.getChildren().addAll(file1, file2);
+
         Text errorText = new Text("");
 
-        Button continueButton = new Button("Continue");
+        Button addRow = new Button("Add");
+        Button removeRow = new Button("Remove");
+        Button continueButton = new Button("Continue"); // change to generate or display
 
-        vbox.getChildren().addAll(file1,file2, continueButton, errorText);
+        HBox buttonRow = new HBox(addRow, removeRow, continueButton, errorText);
+        buttonRow.setAlignment(Pos.CENTER);
+        buttonRow.setSpacing(10);
+        borderPane.setBottom(buttonRow);
 
-        Scene initialScene = new Scene(vbox, 700, 500);
+        Scene initialScene = new Scene(borderPane, 700, 500);
         primaryStage.setScene(initialScene);
         primaryStage.show();
+
+        addRow.setOnAction(e -> {
+            TextField textfield = new TextField();
+            textfield.setPromptText("File " + (tfVbox.getChildren().size() + 1));
+            tfVbox.getChildren().add(textfield);
+        });
+
+        removeRow.setOnAction(e -> {
+            int lastIndex = tfVbox.getChildren().size() - 1;
+            if (lastIndex >= 0) {
+                tfVbox.getChildren().remove(lastIndex);
+            }
+        });
 
         continueButton.setOnAction(e -> {
             try {
@@ -76,20 +104,17 @@ public class BSViewer extends Application {
                 q = Integer.parseInt(qEntry.getText());
                 BSPane bsPane = new BSPane(false);
 
-                int[] array1 = BSFileReader.fileToArray(p,q,file1.getText(),"");
-                int[] array2 = BSFileReader.fileToArray(p,q,file2.getText(),"");
-                if (array1 == null) {
-                    throw new NullPointerException();
-                }
-                else if (array2 == null) {
-                    throw new NullPointerException();
+                for (Node node: tfVbox.getChildren()) {
+                    TextField textField = (TextField) node;
+                    bsPane.addArray(BSFileReader.fileToArray(p, q, textField.getText(), ""));
                 }
 
-                bsPane.addArray(array1);
-                bsPane.addArray(array2);
                 Scene mainScene = new Scene(bsPane, 700, 500);
                 primaryStage.setScene(mainScene);
                 bsPane.drawBS();
+            }
+            catch (IOException ex) {
+                errorText.setText(ex.getMessage());
             }
             catch (NumberFormatException ex) {
                 errorText.setText("p and q must be integers");
@@ -155,7 +180,7 @@ public class BSViewer extends Application {
             indicesBox.setOnAction(event -> {
                 if (indicesBox.isSelected()) setVisibleIndex(true);
                 else setVisibleIndex(false);
-                requestFocus();
+                this.requestFocus();
             });
 
             indexField.setOnAction(e -> {
