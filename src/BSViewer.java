@@ -30,6 +30,8 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import java.util.ArrayList;
 
+//temp
+
 public class BSViewer extends Application {
     int p; // move these into BSPane?
     int q;
