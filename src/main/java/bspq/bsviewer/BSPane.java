@@ -8,13 +8,12 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
+import javafx.util.Pair;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class BSPane extends BorderPane {
-    // drawing parameters
-
     final int p;
     final int q;
 
@@ -33,7 +32,7 @@ public class BSPane extends BorderPane {
     int nextMod; // the mod of the next line (replace with an if statement in the drawBS method?
 
     ArrayList<int[]> bsArrays = new ArrayList<>();
-    ArrayList<Integer> zeroLocation = new ArrayList<>();
+    ArrayList<Pair<Integer,Integer>> zeroLocation = new ArrayList<>();
     ArrayList<String> movesString = new ArrayList<>(); // will be bsArray.length - 1
     ArrayList<Integer> movesOffset = new ArrayList<>(); // will be bsArray.length - 1
 
@@ -72,8 +71,7 @@ public class BSPane extends BorderPane {
         // handlers and listeners
 
         indicesBox.setOnAction(event -> {
-            if (indicesBox.isSelected()) setVisibleIndex(true);
-            else setVisibleIndex(false);
+            setVisibleIndex(indicesBox.isSelected());
             this.requestFocus();
         });
 
@@ -111,7 +109,6 @@ public class BSPane extends BorderPane {
         });
 
         widthProperty().addListener(e -> drawBS());
-
         drawBS();
     }
 
@@ -128,24 +125,40 @@ public class BSPane extends BorderPane {
             firstYLocation = 100;
         }
 
+
         double lineY = firstYLocation;
         double tickSpacing = firstTickSpacing;
-        int arrayIndex = indexStart;
-        //double tickOffsetX = (indexStart % p) * tickSpacing;
-        double tickOffsetX = 0;
+        int arrayIndex = indexStart + zeroLocation.get(0).getKey();
+        double tickOffsetX = widthProperty().getValue() / 2;
 
         showVerticalLine = false;
 
         for (int[] coordinates: bsArrays) { // change to int i and use zeroLocation and other arrays
             drawLines(lineY, tickOffsetX, tickSpacing, coordinates, arrayIndex);
 
-            showVerticalLine = true; // true after the first line is drawn
+
+
             double currentTickOffset = (arrayIndex % nextMod) * tickSpacing; // previous line spacing for a horobrick in pixels
             arrayIndex = (arrayIndex / nextMod) * currentMod + (int) Math.ceil(((arrayIndex % nextMod) * currentMod) / (double) nextMod);
             lineY += lineSpacing;
             tickSpacing *= tickSpacingScaling;
             tickOffsetX = tickOffsetX + (arrayIndex % currentMod) * tickSpacing - currentTickOffset;
+            showVerticalLine = true; // true after the first line is drawn
         }
+
+        /*
+                for (int[] coordinates: bsArrays) { // change to int i and use zeroLocation and other arrays
+            drawLines(lineY, tickOffsetX, tickSpacing, coordinates, arrayIndex);
+
+            double currentTickOffset = (arrayIndex % nextMod) * tickSpacing; // previous line spacing for a horobrick in pixels
+            arrayIndex = (arrayIndex / nextMod) * currentMod + (int) Math.ceil(((arrayIndex % nextMod) * currentMod) / (double) nextMod);
+            lineY += lineSpacing;
+            tickSpacing *= tickSpacingScaling;
+            tickOffsetX = tickOffsetX + (arrayIndex % currentMod) * tickSpacing - currentTickOffset;
+            showVerticalLine = true; // true after the first line is drawn
+        }
+         */
+
     }
 
     private void drawLines(double lineY, double tickOffsetX, double tickSpacing, int[] coordinates, int arrayIndex) {
@@ -228,8 +241,8 @@ public class BSPane extends BorderPane {
     }
 
     public void addArray(int[] array) {
-        // first two integers are the location of the first and last zero
-        zeroLocation.add(array[0]);
+        // first two integers in the array are the location of the first and last zero
+        zeroLocation.add(new Pair<Integer,Integer>(array[0],array[1]));
         bsArrays.add(Arrays.copyOfRange(array, 2, array.length));
     }
 }
