@@ -21,10 +21,34 @@ import java.util.ArrayList;
 public final class BSFileReader {
     private BSFileReader(){}
 
-    public static int[] fileToArray(final int p, final int q, final String movesString, String directory) throws IOException {
+    public static int[] fileToArray(final String movesString, String directory) throws IOException {
         ArrayList<Integer> arrayList = new ArrayList<>();
         try (
-                BufferedReader input = new BufferedReader(new FileReader(directory + "BS" + p + "_" + q + "/" + movesString));
+                BufferedReader input = new BufferedReader(new FileReader(directory + "/" + movesString));
+        ) {
+            String line = input.readLine();
+            while (line != null) {
+                arrayList.add(Integer.parseInt(line));
+                line = input.readLine();
+            }
+            // throw an empty array exception with file name
+        }
+        catch (NumberFormatException ex){
+            System.out.println("Integer not found");
+        }
+
+        if (arrayList.isEmpty()) {
+            throw new IOException("No integers in file " + directory + "/" + movesString);
+        }
+
+        return arrayList.stream().mapToInt(i->i).toArray();
+    }
+
+    // assumes opening in BSp_q/
+    public static int[] fileToArray(final int p, final int q, final String movesString) throws IOException {
+        ArrayList<Integer> arrayList = new ArrayList<>();
+        try (
+                BufferedReader input = new BufferedReader(new FileReader("BS" + p + "_" + q + "/" + movesString));
         ) {
             String line = input.readLine();
             while (line != null) {
@@ -44,6 +68,7 @@ public final class BSFileReader {
         return arrayList.stream().mapToInt(i->i).toArray();
     }
 
+    /*
     public static int[] fileToArray(String filePath) { // throws file not found exception?
         ArrayList<Integer> arrayList = new ArrayList<>();
         try (
@@ -66,4 +91,5 @@ public final class BSFileReader {
         return arrayList.stream().mapToInt(i->i).toArray();
     }
 
+     */
 }

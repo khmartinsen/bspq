@@ -1,5 +1,6 @@
 package bspq.bsviewer;
 
+import bspq.bspqtools.Coset;
 import javafx.geometry.Pos;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
@@ -31,10 +32,14 @@ public class BSPane extends BorderPane {
     int currentMod;
     int nextMod; // the mod of the next line (replace with an if statement in the drawBS method?
 
+    ArrayList<Coset> cosets = new ArrayList<>();
+
+    /*
     ArrayList<int[]> bsArrays = new ArrayList<>();
-    ArrayList<Pair<Integer,Integer>> zeroLocation = new ArrayList<>();
+    ArrayList<Pair<Integer,Integer>> zeroIndex = new ArrayList<>();
     ArrayList<String> movesString = new ArrayList<>(); // will be bsArray.length - 1
-    ArrayList<Integer> movesOffset = new ArrayList<>(); // will be bsArray.length - 1
+    ArrayList<Integer> movesOffset = new ArrayList<>(); // will be bsArray.length - 1\
+    */
 
     Pane centerPane = new Pane();
 
@@ -60,7 +65,7 @@ public class BSPane extends BorderPane {
         setTop(topMenu);
         setCenter(centerPane);
 
-        Text bsInfo = new Text("p: " + String.valueOf(p) + "\nq: " + String.valueOf(q));
+        Text bsInfo = new Text("p: " + p + "\nq: " + q);
         CheckBox indicesBox = new CheckBox("Show Indices");
         TextField indexField = new TextField("Jump to index x");
 
@@ -109,7 +114,7 @@ public class BSPane extends BorderPane {
         });
 
         widthProperty().addListener(e -> drawBS());
-        drawBS();
+        //drawBS();
     }
 
     public void drawBS() {
@@ -128,13 +133,14 @@ public class BSPane extends BorderPane {
 
         double lineY = firstYLocation;
         double tickSpacing = firstTickSpacing;
-        int arrayIndex = indexStart + zeroLocation.get(0).getKey();
-        double tickOffsetX = widthProperty().getValue() / 2;
+        double zeroXPosition = widthProperty().doubleValue() / 2;
+        int arrayIndex = indexStart + cosets.get(0).getFirstZero() - (int)Math.ceil(zeroXPosition / tickSpacing);
+
 
         showVerticalLine = false;
 
-        for (int[] coordinates: bsArrays) { // change to int i and use zeroLocation and other arrays
-            drawLines(lineY, tickOffsetX, tickSpacing, coordinates, arrayIndex);
+        for (Coset coset: cosets) { // change to int i and use zeroLocation and other arrays
+            drawLines(lineY, tickSpacing, arrayIndex, coset);
 
 
 
@@ -142,7 +148,7 @@ public class BSPane extends BorderPane {
             arrayIndex = (arrayIndex / nextMod) * currentMod + (int) Math.ceil(((arrayIndex % nextMod) * currentMod) / (double) nextMod);
             lineY += lineSpacing;
             tickSpacing *= tickSpacingScaling;
-            tickOffsetX = tickOffsetX + (arrayIndex % currentMod) * tickSpacing - currentTickOffset;
+            zeroXPosition = zeroXPosition + (arrayIndex % currentMod) * tickSpacing - currentTickOffset;
             showVerticalLine = true; // true after the first line is drawn
         }
 
@@ -161,30 +167,30 @@ public class BSPane extends BorderPane {
 
     }
 
-    private void drawLines(double lineY, double tickOffsetX, double tickSpacing, int[] coordinates, int arrayIndex) {
+    private void drawLines(double lineY, double tickSpacing, int arrayIndex, Coset coset) {
         Line line = new Line(0, lineY, widthProperty().doubleValue(), lineY);
-        //Text move = new Text(movesString.get(0));
-        //move.setY(lineY - lineSpacing / 2);
-        // movesString[]
-        centerPane.getChildren().add(line);
+        int[] coordinates = coset.getCoordinates();
+        Text move = new Text(coset.getMoves().get(coset.getMoves().size() - 1));
+        move.setY(lineY + (lineSpacing / 2));
+        centerPane.getChildren().addAll(line, move);
 
         for (double i = 0; i < widthProperty().doubleValue(); i += tickSpacing) {
-            Line tick = new Line(i + tickOffsetX, lineY - tickSize, i + tickOffsetX, lineY + tickSize);
+            Line tick = new Line(i, lineY - tickSize, i, lineY + tickSize);
             Text number = new Text(String.valueOf(coordinates[arrayIndex]));
-            number.setX(i + tickOffsetX - number.getLayoutBounds().getWidth() / 2);
+            number.setX(i - number.getLayoutBounds().getWidth() / 2);
             number.setY(lineY - 10);
             centerPane.getChildren().addAll(tick, number);
 
             // throw everything above in this if statement and offset the numbers to the left or right for visibility?
             if (arrayIndex % currentMod == 0 && showVerticalLine) { // connecting vertical lines
-                Line edge = new Line(i + tickOffsetX, lineY, i + tickOffsetX, lineY - lineSpacing); // line goes the opposite way the lines are being built
+                Line edge = new Line(i, lineY, i, lineY - lineSpacing); // line goes the opposite way the lines are being built
                 edge.setOpacity(.6);
                 centerPane.getChildren().add(edge);
             }
 
             if (visibleIndex) {
-                Text absCount = new Text(String.valueOf(arrayIndex));
-                absCount.setX(i + tickOffsetX - absCount.getLayoutBounds().getWidth() / 2);
+                Text absCount = new Text(String.valueOf(arrayIndex - coset.getFirstZero()));
+                absCount.setX(i - absCount.getLayoutBounds().getWidth() / 2);
                 absCount.setY(lineY + 20); // put index under the tick marks
                 centerPane.getChildren().add(absCount);
             }
@@ -222,14 +228,14 @@ public class BSPane extends BorderPane {
     }
 
     public void decIndex() {
-        if (indexStart - 1 >= 0) {
+        //if (indexStart - 1 >= cosets.get(0).getFirstZero()) {
             indexStart -= 1;
             drawBS();
-        }
+        //}
     }
 
     public void setIndex(int x) {
-        if (x >= 0 && x < bsArrays.get(0).length) {
+        if (x >= 0 && x < cosets.get(0).getCoordinates().length) {
             indexStart = x;
             drawBS();
         }
@@ -240,9 +246,8 @@ public class BSPane extends BorderPane {
         drawBS();
     }
 
-    public void addArray(int[] array) {
-        // first two integers in the array are the location of the first and last zero
-        zeroLocation.add(new Pair<Integer,Integer>(array[0],array[1]));
-        bsArrays.add(Arrays.copyOfRange(array, 2, array.length));
+    public void addCoset(int[] rawArray, String path) {
+        // change to cosets calling the BSFileReader methods?
+        cosets.add(new Coset(rawArray, path));
     }
 }

@@ -36,7 +36,6 @@ public class Controller {
 
     @FXML
     private void generateBSPane () {
-        System.out.println("Working Directory = " + System.getProperty("user.dir"));
         try {
             int p = Integer.parseInt(pEntry.getText());
             int q = Integer.parseInt(qEntry.getText());
@@ -44,7 +43,7 @@ public class Controller {
 
             for (Node node: tfVbox.getChildren()) {
                 TextField textField = (TextField) node;
-                bsPane.addArray(BSFileReader.fileToArray(p, q, textField.getText(), ""));
+                bsPane.addCoset(BSFileReader.fileToArray(p, q, textField.getText().trim()), textField.getText().trim());
             }
 
             Stage currentStage = (Stage) tfVbox.getScene().getWindow();

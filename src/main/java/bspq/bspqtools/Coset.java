@@ -45,6 +45,14 @@ public class Coset {
         return path;
     }
 
+    public ArrayList<String> getMoves() {
+        return moves;
+    }
+
+    public int getLastMoveOffset() {
+        return lastMoveOffset;
+    }
+
     public static ArrayList<String> parsePathString(String path) {
         ArrayList<String> moves = new ArrayList<>();
         int start = 0;
