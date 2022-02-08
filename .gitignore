@@ -13,6 +13,6 @@ BS2_4/
 out/
 build/
 
-.gradle/
+.gradle
 
 *.lock
