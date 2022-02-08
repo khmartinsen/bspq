@@ -33,7 +33,7 @@ public class BSViewer extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(BSViewer.class.getResource("bsviewer.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("bsviewer.fxml"));
         Scene menuScene = new Scene(fxmlLoader.load());
 
         primaryStage.setScene(menuScene);
