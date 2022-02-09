@@ -141,7 +141,7 @@ public class BSPane extends BorderPane {
         showVerticalLine = false;
 
         for (Coset coset: cosets) { // change to int i and use zeroLocation and other arrays
-            arrayIndex = relativeIndex + coset.getFirstZero() - indexOffset;
+            //arrayIndex = relativeIndex + coset.getFirstZero() - indexOffset;
             drawLines(lineY, tickSpacing, tickOffsetX, arrayIndex, coset);
 
             lineY += lineSpacing;
@@ -149,25 +149,24 @@ public class BSPane extends BorderPane {
             tickSpacing *= tickSpacingScaling;
             showVerticalLine = true; // true after the first line is drawn
 
-            indexOffset = + (int)Math.ceil((coset.getLastMoveOffset() * oldTickSpacing) / tickSpacing) ;
-            System.out.println(indexOffset);
-            tickOffsetX = ((coset.getLastMoveOffset() * oldTickSpacing) + (nextMod * tickSpacing)) % tickSpacing;
-            //System.out.println(coset.getLastMoveOffset() + " " + tickOffsetX);
-            if (tickOffsetX < 0.0) tickOffsetX += nextMod * tickSpacing;
+            arrayIndex = (relativeIndex ) * currentMod + coset.getFirstZero();
 
+            tickOffsetX = (coset.getLastMoveOffset() * oldTickSpacing); // this needs to be just before drawLines
 
-            //double currentTickOffset = (arrayIndex % nextMod) * tickSpacing; // previous line spacing for a horobrick in pixels
-            //arrayIndex = (arrayIndex / nextMod) * currentMod + (int) Math.ceil(((arrayIndex % nextMod) * currentMod) / (double) nextMod);
-            //zeroXPosition = zeroXPosition + (arrayIndex % currentMod) * tickSpacing - currentTickOffset;
         }
     }
 
     private void drawLines(double lineY, double tickSpacing, double tickOffsetX, int arrayIndex, Coset coset) {
         Line line = new Line(0, lineY, widthProperty().doubleValue(), lineY);
         int[] coordinates = coset.getCoordinates();
-        Text move = new Text(coset.getMoves().get(coset.getMoves().size() - 1));
-        move.setY(lineY + (lineSpacing / 2));
-        centerPane.getChildren().addAll(line, move);
+        centerPane.getChildren().add(line);
+
+        if (showVerticalLine) {
+            Text move = new Text(coset.getMoves().get(coset.getMoves().size() - 1));
+            move.setY(lineY + (lineSpacing / 2));
+            centerPane.getChildren().add(move);
+        }
+
 
         for (double i = tickOffsetX; i < widthProperty().doubleValue(); i += tickSpacing) {
             Line tick = new Line(i, lineY - tickSize, i, lineY + tickSize);
