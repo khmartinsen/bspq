@@ -9,10 +9,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
-import javafx.util.Pair;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class BSPane extends BorderPane {
     final int p;
@@ -27,7 +25,7 @@ public class BSPane extends BorderPane {
     boolean visibleIndex = false; // display absolute count with relative count
 
     // array and p,q modulus values
-    int indexStart = 0;
+    int relativeIndex = 0;
     boolean direction = false; // true up, false down (change to enum)
     int currentMod;
     int nextMod; // the mod of the next line (replace with an if statement in the drawBS method?
@@ -50,13 +48,13 @@ public class BSPane extends BorderPane {
 
         if (direction) {
             lineSpacing = -100;
-            currentMod = p; // if the sheet is going up we draw lines down every p
-            nextMod = q;
+            currentMod = q; // if the sheet is going up we draw lines down every p
+            nextMod = p;
             tickSpacingScaling = (double) q / p;
         }
         else {
-            currentMod = q;
-            nextMod = p;
+            currentMod = p;
+            nextMod = q;
             tickSpacingScaling = (double) p / q;
         }
 
@@ -77,7 +75,7 @@ public class BSPane extends BorderPane {
 
         indicesBox.setOnAction(event -> {
             setVisibleIndex(indicesBox.isSelected());
-            this.requestFocus();
+            requestFocus();
         });
 
         indexField.setOnAction(e -> {
@@ -133,48 +131,45 @@ public class BSPane extends BorderPane {
 
         double lineY = firstYLocation;
         double tickSpacing = firstTickSpacing;
-        double zeroXPosition = widthProperty().doubleValue() / 2;
-        int arrayIndex = indexStart + cosets.get(0).getFirstZero() - (int)Math.ceil(zeroXPosition / tickSpacing);
+        //double zeroXPosition = widthProperty().doubleValue() / 2;
+        //int arrayIndex = relativeIndex + cosets.get(0).getFirstZero();
+        int arrayIndex = relativeIndex + cosets.get(0).getFirstZero();;
+        int indexOffset = 0;
+        double tickOffsetX = 0.0; // a non-negative value
 
 
         showVerticalLine = false;
 
         for (Coset coset: cosets) { // change to int i and use zeroLocation and other arrays
-            drawLines(lineY, tickSpacing, arrayIndex, coset);
+            arrayIndex = relativeIndex + coset.getFirstZero() - indexOffset;
+            drawLines(lineY, tickSpacing, tickOffsetX, arrayIndex, coset);
 
-
-
-            double currentTickOffset = (arrayIndex % nextMod) * tickSpacing; // previous line spacing for a horobrick in pixels
-            arrayIndex = (arrayIndex / nextMod) * currentMod + (int) Math.ceil(((arrayIndex % nextMod) * currentMod) / (double) nextMod);
             lineY += lineSpacing;
+            double oldTickSpacing = tickSpacing;
             tickSpacing *= tickSpacingScaling;
-            zeroXPosition = zeroXPosition + (arrayIndex % currentMod) * tickSpacing - currentTickOffset;
             showVerticalLine = true; // true after the first line is drawn
+
+            indexOffset = + (int)Math.ceil((coset.getLastMoveOffset() * oldTickSpacing) / tickSpacing) ;
+            System.out.println(indexOffset);
+            tickOffsetX = ((coset.getLastMoveOffset() * oldTickSpacing) + (nextMod * tickSpacing)) % tickSpacing;
+            //System.out.println(coset.getLastMoveOffset() + " " + tickOffsetX);
+            if (tickOffsetX < 0.0) tickOffsetX += nextMod * tickSpacing;
+
+
+            //double currentTickOffset = (arrayIndex % nextMod) * tickSpacing; // previous line spacing for a horobrick in pixels
+            //arrayIndex = (arrayIndex / nextMod) * currentMod + (int) Math.ceil(((arrayIndex % nextMod) * currentMod) / (double) nextMod);
+            //zeroXPosition = zeroXPosition + (arrayIndex % currentMod) * tickSpacing - currentTickOffset;
         }
-
-        /*
-                for (int[] coordinates: bsArrays) { // change to int i and use zeroLocation and other arrays
-            drawLines(lineY, tickOffsetX, tickSpacing, coordinates, arrayIndex);
-
-            double currentTickOffset = (arrayIndex % nextMod) * tickSpacing; // previous line spacing for a horobrick in pixels
-            arrayIndex = (arrayIndex / nextMod) * currentMod + (int) Math.ceil(((arrayIndex % nextMod) * currentMod) / (double) nextMod);
-            lineY += lineSpacing;
-            tickSpacing *= tickSpacingScaling;
-            tickOffsetX = tickOffsetX + (arrayIndex % currentMod) * tickSpacing - currentTickOffset;
-            showVerticalLine = true; // true after the first line is drawn
-        }
-         */
-
     }
 
-    private void drawLines(double lineY, double tickSpacing, int arrayIndex, Coset coset) {
+    private void drawLines(double lineY, double tickSpacing, double tickOffsetX, int arrayIndex, Coset coset) {
         Line line = new Line(0, lineY, widthProperty().doubleValue(), lineY);
         int[] coordinates = coset.getCoordinates();
         Text move = new Text(coset.getMoves().get(coset.getMoves().size() - 1));
         move.setY(lineY + (lineSpacing / 2));
         centerPane.getChildren().addAll(line, move);
 
-        for (double i = 0; i < widthProperty().doubleValue(); i += tickSpacing) {
+        for (double i = tickOffsetX; i < widthProperty().doubleValue(); i += tickSpacing) {
             Line tick = new Line(i, lineY - tickSize, i, lineY + tickSize);
             Text number = new Text(String.valueOf(coordinates[arrayIndex]));
             number.setX(i - number.getLayoutBounds().getWidth() / 2);
@@ -182,7 +177,7 @@ public class BSPane extends BorderPane {
             centerPane.getChildren().addAll(tick, number);
 
             // throw everything above in this if statement and offset the numbers to the left or right for visibility?
-            if (arrayIndex % currentMod == 0 && showVerticalLine) { // connecting vertical lines
+            if ((arrayIndex - coset.getFirstZero()) % nextMod == 0 && showVerticalLine) { // connecting vertical lines
                 Line edge = new Line(i, lineY, i, lineY - lineSpacing); // line goes the opposite way the lines are being built
                 edge.setOpacity(.6);
                 centerPane.getChildren().add(edge);
@@ -223,26 +218,27 @@ public class BSPane extends BorderPane {
     }
 
     public void incIndex() {
-        indexStart += 1;
+        relativeIndex += 1;
         drawBS();
     }
 
     public void decIndex() {
         //if (indexStart - 1 >= cosets.get(0).getFirstZero()) {
-            indexStart -= 1;
+            relativeIndex -= 1;
             drawBS();
         //}
     }
 
     public void setIndex(int x) {
-        if (x >= 0 && x < cosets.get(0).getCoordinates().length) {
-            indexStart = x;
+        int indexOffset = cosets.get(0).getFirstZero();
+        if (indexOffset + x >= 0 && x < cosets.get(0).getCoordinates().length - indexOffset) {
+            relativeIndex = x;
             drawBS();
         }
     }
 
     public void resetStart() {
-        indexStart = 0;
+        relativeIndex = 0;
         drawBS();
     }
 
