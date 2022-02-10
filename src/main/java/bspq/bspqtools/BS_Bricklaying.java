@@ -72,6 +72,10 @@ public class BS_Bricklaying {
                 }
 
                 File file = new File(directory + "/" + "mainline");
+                if(!file.getParentFile().mkdir()) { // this may not be needed?
+                    System.out.println("Could not create directory " + file.getParent());
+                    System.exit(1);
+                }
 
                 if (file.exists()) {
                     System.out.println("File " + file.getName() + " already exists.");
