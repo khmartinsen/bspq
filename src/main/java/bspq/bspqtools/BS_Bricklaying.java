@@ -11,7 +11,9 @@ This version includes lastRadiusPosition function at the end
 */
 package bspq.bspqtools;
 
-
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.Scanner;
 
 public class BS_Bricklaying {
@@ -42,7 +44,7 @@ public class BS_Bricklaying {
         }
 
         System.out.println("1) Print accumulate output");
-        System.out.println("2) Output the mainline");
+        System.out.println("2) Save the mainline to a file");
         System.out.println("3) Find the last instance of r (when p|q)");
         System.out.print("Choose a selection: ");
         int userInput = input.nextInt();
@@ -60,8 +62,29 @@ public class BS_Bricklaying {
             case 2:
                 System.out.print("Enter a distance to calculate to: ");
                 distance = input.nextInt();
+                input.nextLine(); // burn an input due
+                System.out.println("Default location is BS" + p + "_" + q + "/ in " + System.getProperty("user.dir"));
+                System.out.print("Enter a directory (without /) or press enter for default: ");
+                String directory = input.nextLine().trim();
+
+                if (directory.isEmpty()) {
+                    directory = "BS" + p + "_" + q;
+                }
+
+                File file = new File(directory + "/" + "mainline");
+
+                if (file.exists()) {
+                    System.out.println("File " + file.getName() + " already exists.");
+                    System.out.print("Would you like to override? (y/N): ");
+                    if ((input.next().trim().compareTo("y")) < 1) {
+                        System.out.println("Stopping operation.");
+                        System.exit(1);
+                    }
+                }
+
                 mainline = brickLaying(p, q, distance);
-                System.out.println(java.util.Arrays.toString(mainline));
+                writeToFile(mainline, file);
+                System.out.println("Saved to file: " + file.getName());
                 break;
             case 3:
                 System.out.print("Enter the radius: ");
@@ -86,11 +109,10 @@ public class BS_Bricklaying {
         mainline[0] = 0;
 
         // should this be just i or q * i?
-        int initialZone = q * (int)Math.ceil(p / (q - p));
+        int initialZone = q * (int)Math.ceil(p / (double)(q - p));
 
         // build the brick from b^0 to b^q
-        if (p + 2 < q) mainline[q] = p + 2;
-        else mainline[q] = q;
+        mainline[q] = Math.min(p + 2, q);
         interpolateWhile(mainline, 0, q);
 
         // build from b^q to b^ initialZone
@@ -210,6 +232,23 @@ public class BS_Bricklaying {
             int closeRadius = r - 1;
             int height = (closeRadius - p) / 2;
             return (int)Math.pow(q, height) + 1;
+        }
+    }
+
+    private static void writeToFile(int[] mainline, File file) {
+        try(
+                PrintWriter output = new PrintWriter(file);
+                )
+        {
+            // first and last zero are at index 0 in the array
+            output.println(0);
+            output.println(0);
+            for (int i : mainline) {
+                output.println(i);
+            }
+        }
+        catch (FileNotFoundException ex) {
+            ex.printStackTrace();
         }
     }
 }
