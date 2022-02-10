@@ -9,7 +9,7 @@ public class Coset {
     final int lastZero;
     public final int[] coordinates;
     String path;
-    ArrayList<String> moves;
+    ArrayList<String> moves = new ArrayList<>();
     int lastMoveOffset = 0;
 
 
@@ -18,15 +18,20 @@ public class Coset {
         lastZero = array[1];
         coordinates = Arrays.copyOfRange(array, 2, array.length);
         this.path = path;
-        moves = parsePathString(path);
 
-        String lastMove = moves.get(moves.size() - 1);
-
-        for (int i = 0; i < lastMove.length(); i++) {
-            if (lastMove.charAt(i) == 'B') lastMoveOffset--;
-            else if (lastMove.charAt(i) == 'b') lastMoveOffset++;
+        if (path.equals("mainline")) {
+            moves.add("mainline");
         }
+        else {
+            moves = parsePathString(path);
 
+            String lastMove = moves.get(moves.size() - 1);
+
+            for (int i = 0; i < lastMove.length(); i++) {
+                if (lastMove.charAt(i) == 'B') lastMoveOffset--;
+                else if (lastMove.charAt(i) == 'b') lastMoveOffset++;
+            }
+        }
     }
 
     public int getFirstZero() {
@@ -58,7 +63,7 @@ public class Coset {
         int start = 0;
         for(int i = 0; i < path.length(); i++) {
             if (path.charAt(i) == 't' || path.charAt(i) == 'T') {
-                moves.add(path.substring(start, i));
+                moves.add(path.substring(start, i + 1));
                 start = i + 1;
             }
         }

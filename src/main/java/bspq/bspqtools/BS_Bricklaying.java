@@ -80,7 +80,7 @@ public class BS_Bricklaying {
                 if (file.exists()) {
                     System.out.println("File " + file.getName() + " already exists.");
                     System.out.print("Would you like to override? (y/N): ");
-                    if ((input.next().trim().compareTo("y")) < 1) {
+                    if (!(input.next().trim().equals("y"))) {
                         System.out.println("Stopping operation.");
                         System.exit(1);
                     }

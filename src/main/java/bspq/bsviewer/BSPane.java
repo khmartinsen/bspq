@@ -131,28 +131,37 @@ public class BSPane extends BorderPane {
 
         double lineY = firstYLocation;
         double tickSpacing = firstTickSpacing;
+        double oldTickSpacing = tickSpacing;
         //double zeroXPosition = widthProperty().doubleValue() / 2;
         //int arrayIndex = relativeIndex + cosets.get(0).getFirstZero();
-        int arrayIndex = relativeIndex + cosets.get(0).getFirstZero();;
-        int indexOffset = 0;
-        double tickOffsetX = 0.0; // a non-negative value
+        int arrayIndex = 0;
+        //int indexOffset = 0;
+        double tickOffsetX = 0.0;
+
+        double indexScaling = 1;
 
 
         showVerticalLine = false;
 
         for (Coset coset: cosets) { // change to int i and use zeroLocation and other arrays
             //arrayIndex = relativeIndex + coset.getFirstZero() - indexOffset;
+            arrayIndex = (int)(relativeIndex * indexScaling) + coset.getFirstZero() - (int)Math.floor((coset.getLastMoveOffset() * oldTickSpacing) / tickSpacing);
+            //tickOffsetX += (coset.getLastMoveOffset() * oldTickSpacing);
+            // change so X is non-negative by adding ceil(
+            tickOffsetX = (tickOffsetX + ((Math.abs(relativeIndex + coset.getLastMoveOffset()) % currentMod) * oldTickSpacing)
+                    - Math.floor(((Math.abs(relativeIndex + coset.getLastMoveOffset()) % currentMod) * oldTickSpacing) / tickSpacing) * tickSpacing) % tickSpacing;
+
+            //System.out.println("currentMod: " +currentMod + " mod: " + (Math.abs(arrayIndex - coset.getFirstZero() + coset.getLastMoveOffset()) % currentMod));
+            //System.out.println("TickOffsetX: " + tickOffsetX);
+
+
             drawLines(lineY, tickSpacing, tickOffsetX, arrayIndex, coset);
 
             lineY += lineSpacing;
-            double oldTickSpacing = tickSpacing;
+            oldTickSpacing = tickSpacing;
             tickSpacing *= tickSpacingScaling;
             showVerticalLine = true; // true after the first line is drawn
-
-            arrayIndex = (relativeIndex ) * currentMod + coset.getFirstZero();
-
-            tickOffsetX = (coset.getLastMoveOffset() * oldTickSpacing); // this needs to be just before drawLines
-
+            indexScaling = indexScaling * (nextMod / (double)currentMod); // should this be nextMod / currentMod?
         }
     }
 
@@ -163,7 +172,7 @@ public class BSPane extends BorderPane {
 
         if (showVerticalLine) {
             Text move = new Text(coset.getMoves().get(coset.getMoves().size() - 1));
-            move.setY(lineY + (lineSpacing / 2));
+            move.setY(lineY - (lineSpacing / 2));
             centerPane.getChildren().add(move);
         }
 
