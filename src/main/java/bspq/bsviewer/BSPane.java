@@ -25,7 +25,7 @@ public class BSPane extends BorderPane {
     boolean visibleIndex = false; // display absolute count with relative count
 
     // array and p,q modulus values
-    int relativeIndex = 0;
+    int startIndex = 0;
     boolean direction = false; // true up, false down (change to enum)
     int currentMod;
     int nextMod; // the mod of the next line (replace with an if statement in the drawBS method?
@@ -131,41 +131,66 @@ public class BSPane extends BorderPane {
 
         double lineY = firstYLocation;
         double tickSpacing = firstTickSpacing;
-        double oldTickSpacing = tickSpacing;
+        double oldTickSpacing = 0;
         //double zeroXPosition = widthProperty().doubleValue() / 2;
-        //int arrayIndex = relativeIndex + cosets.get(0).getFirstZero();
-        int arrayIndex = 0;
+        //int arrayIndex = startIndex + cosets.get(0).getFirstZero();
+        //int arrayIndex = startIndex;
         //int indexOffset = 0;
         double tickOffsetX = 0.0;
 
-        double indexScaling = 1;
+        double indexScaling = 1.0;
 
+        int relativeIndex = startIndex;
 
         showVerticalLine = false;
 
-        for (Coset coset: cosets) { // change to int i and use zeroLocation and other arrays
-            //arrayIndex = relativeIndex + coset.getFirstZero() - indexOffset;
-            arrayIndex = (int)(relativeIndex * indexScaling) + coset.getFirstZero() - (int)Math.floor((coset.getLastMoveOffset() * oldTickSpacing) / tickSpacing);
-            //tickOffsetX += (coset.getLastMoveOffset() * oldTickSpacing);
-            // change so X is non-negative by adding ceil(
-            tickOffsetX = (tickOffsetX + ((Math.abs(relativeIndex + coset.getLastMoveOffset()) % currentMod) * oldTickSpacing)
-                    - Math.floor(((Math.abs(relativeIndex + coset.getLastMoveOffset()) % currentMod) * oldTickSpacing) / tickSpacing) * tickSpacing) % tickSpacing;
+        double lengthToEdge = 0.0;
 
+        //System.out.print(relativeIndex + " -- ");
+
+        for (Coset coset: cosets) { // change to int i and use zeroLocation and other arrays
             //System.out.println("currentMod: " +currentMod + " mod: " + (Math.abs(arrayIndex - coset.getFirstZero() + coset.getLastMoveOffset()) % currentMod));
             //System.out.println("TickOffsetX: " + tickOffsetX);
+            /*
+            System.out.println("Tick spacing: " + tickSpacing);
+            System.out.println("Tick offset: " + tickOffsetX);
+            */
+            //arrayIndex = (int)Math.round(relativeIndex * indexScaling) + coset.getFirstZero() - (int)Math.floor((coset.getLastMoveOffset() * oldTickSpacing) / tickSpacing);
+
+            //distance (in pixels?) to the nearest left edge of a horobrick based from the previous line
+
+            lengthToEdge = (Math.abs(relativeIndex + coset.getLastMoveOffset()) % currentMod) * oldTickSpacing;
+
+            // (relativeIndex - coset.getLastMoveOffset()) * indexScaling) will always be an integer and needs to be casted too
+            relativeIndex = (int)((relativeIndex - coset.getLastMoveOffset()) * indexScaling) + (int)Math.ceil(lengthToEdge / tickSpacing);
+            System.out.println("div: " + lengthToEdge / tickSpacing + " ceil: " + Math.ceil(lengthToEdge / tickSpacing));
+
+            tickOffsetX = (tickOffsetX + (Math.ceil(lengthToEdge / tickSpacing) * tickSpacing) - lengthToEdge) % tickSpacing;
 
 
-            drawLines(lineY, tickSpacing, tickOffsetX, arrayIndex, coset);
+            drawLines(lineY, tickSpacing, tickOffsetX, relativeIndex + coset.getFirstZero(), coset);
+
+
 
             lineY += lineSpacing;
             oldTickSpacing = tickSpacing;
             tickSpacing *= tickSpacingScaling;
             showVerticalLine = true; // true after the first line is drawn
-            indexScaling = indexScaling * (nextMod / (double)currentMod); // should this be nextMod / currentMod?
+            indexScaling = (double)nextMod / currentMod;
+            // indexScaling = indexScaling * (nextMod / (double)currentMod); // should this be nextMod / currentMod?
+
+            /*
+            System.out.println("lengthToLine: " + lengthToLine);
+            System.out.println(Math.ceil(lengthToLine / tickSpacing));
+            System.out.println((Math.ceil(lengthToLine / tickSpacing) * tickSpacing) - lengthToLine);
+            System.out.println((tickOffsetX + (Math.ceil(lengthToLine / tickSpacing) * tickSpacing) - lengthToLine) % tickSpacing);
+            System.out.println();
+            */
         }
     }
 
-    private void drawLines(double lineY, double tickSpacing, double tickOffsetX, int arrayIndex, Coset coset) {
+    private void drawLines(final double lineY, final double tickSpacing, final double tickOffsetX,final int index, Coset coset) {
+        int arrayIndex = index;
         Line line = new Line(0, lineY, widthProperty().doubleValue(), lineY);
         int[] coordinates = coset.getCoordinates();
         centerPane.getChildren().add(line);
@@ -226,13 +251,13 @@ public class BSPane extends BorderPane {
     }
 
     public void incIndex() {
-        relativeIndex += 1;
+        startIndex += 1;
         drawBS();
     }
 
     public void decIndex() {
         //if (indexStart - 1 >= cosets.get(0).getFirstZero()) {
-            relativeIndex -= 1;
+            startIndex -= 1;
             drawBS();
         //}
     }
@@ -240,13 +265,13 @@ public class BSPane extends BorderPane {
     public void setIndex(int x) {
         int indexOffset = cosets.get(0).getFirstZero();
         if (indexOffset + x >= 0 && x < cosets.get(0).getCoordinates().length - indexOffset) {
-            relativeIndex = x;
+            startIndex = x;
             drawBS();
         }
     }
 
     public void resetStart() {
-        relativeIndex = 0;
+        startIndex = 0;
         drawBS();
     }
 
