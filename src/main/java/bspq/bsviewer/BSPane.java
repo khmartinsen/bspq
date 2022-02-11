@@ -149,17 +149,30 @@ public class BSPane extends BorderPane {
             showVerticalLine = true; // true after the first line is drawn
             indexScaling = (double)nextMod / currentMod;
 
-            lengthToEdge = (Math.abs(relativeIndex + cosets.get(i).getLastMoveOffset()) % currentMod) * oldTickSpacing;
-            relativeIndex = (int)(indexScaling * (relativeIndex - cosets.get(i).getLastMoveOffset() - (((relativeIndex - cosets.get(i).getLastMoveOffset()) % currentMod) + currentMod) % currentMod)) + (int)Math.ceil(lengthToEdge / tickSpacing);
-            tickOffsetX = (tickOffsetX + (Math.ceil(lengthToEdge / tickSpacing) * tickSpacing) - lengthToEdge) % tickSpacing;
+            // go the the next right edge
+            int indexOffset = (((relativeIndex - cosets.get(i).getLastMoveOffset()) % currentMod) + currentMod) % currentMod; // non-negative value, distance to right horobrick edge
+            relativeIndex = (int)((relativeIndex + indexOffset) * indexScaling); // relative starting point for the next line
+            tickOffsetX += (indexOffset + cosets.get(0).getLastMoveOffset()) * oldTickSpacing; // distance for that relative index to start at
 
             drawLines(lineY, tickSpacing, tickOffsetX, relativeIndex + cosets.get(i).getFirstZero(), cosets.get(i));
         }
     }
 
-    private void drawLines(final double lineY, final double tickSpacing, final double tickOffsetX,final int index, Coset coset) {
-        int arrayIndex = index;
+    private void drawLines(final double lineY, final double tickSpacing, double tickOffsetX,int relativeIndex, Coset coset) {
         int[] coordinates = coset.getCoordinates();
+
+        // move index and tickOffsetX over to the left
+        while (tickOffsetX - tickSpacing >= 0.0 || tickOffsetX < 0) {
+            if (tickOffsetX < 0) {
+                tickOffsetX += tickSpacing;
+                relativeIndex++;
+            }
+            else {
+                tickOffsetX -= tickSpacing;
+                relativeIndex--;
+            }
+        }
+        int arrayIndex = relativeIndex; // used so we don't increment relativeIndex or tickOffsetX
 
         Line line = new Line(0, lineY, widthProperty().doubleValue(), lineY);
 
