@@ -39,27 +39,5 @@ public class BSViewer extends Application {
         primaryStage.setScene(menuScene);
         primaryStage.show();
     }
-
-
-
-    private static ArrayList<String> pathParse(String path) {
-        // When we encounter a t/T, we split and add to the array list
-        ArrayList<String> movesList = new ArrayList<String>(path.length()/2); // too generous?
-        int start = 0;
-
-        for (int i = 0; i < path.length(); i ++) {
-            if (path.charAt(i) == 't' || path.charAt(i) == 'T') {
-                movesList.add(path.substring(start,i + 1));
-                start = i + 1;
-            }
-        }
-
-        return movesList;
-    }
-
-    private static int moveOffset(String move) {
-        // count number of b's or B's
-        return 0;
-    }
 }
 
