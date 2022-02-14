@@ -8,7 +8,7 @@ The file is named by its path in the tree of BS(p,q). The file is placed in a fo
 
 Ex: The coset associated with BTBTbbt in BS(2,4) has the directory path "BS2_4/BTBTbbt".
 
-## Baumslag Solitary Cayley Sheet Viewer
+## Baumslag-Solitar Cayley Sheet Viewer
 This program is used to view the coset data files in a Cayley graph style.
 Enter the p and q for the desired group. Then enter the file names as described above. The program will 
 automatically determine if the sheet is going up or down based on the second file's last move. \
