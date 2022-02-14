@@ -16,7 +16,7 @@ Add a styles sheet for the text fields that get added
 
  */
 
-package bspq.bsviewer;
+package bspq.viewer;
 
 
 import javafx.application.Application;
@@ -24,7 +24,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import java.io.IOException;
-import java.util.ArrayList;
 
 public class BSViewer extends Application {
     public static void main(String[] args) {

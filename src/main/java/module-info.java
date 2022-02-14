@@ -3,7 +3,7 @@ module bspq.bspqtools {
     requires javafx.fxml;
 
 
-    opens bspq.bsviewer to javafx.fxml;
-    exports bspq.bspqtools;
-    exports bspq.bsviewer;
+    opens bspq.viewer to javafx.fxml;
+    exports bspq.tools;
+    exports bspq.viewer;
 }

@@ -1,6 +1,7 @@
-package bspq.bsviewer;
+package bspq.viewer;
 
-import bspq.bspqtools.BSFileReader;
+import bspq.tools.BSFileReader;
+import bspq.tools.Coset;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -10,6 +11,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class Controller {
     @FXML TextField pEntry;
@@ -37,21 +39,28 @@ public class Controller {
     @FXML
     private void generateBSPane () {
         try {
+            boolean direction = false; // down default
             int p = Integer.parseInt(pEntry.getText());
             int q = Integer.parseInt(qEntry.getText());
-            BSPane bsPane = new BSPane(p,q,false);
+
+            ArrayList<Coset> cosets = new ArrayList<>();
 
             for (Node node: tfVbox.getChildren()) {
                 TextField textField = (TextField) node;
-                bsPane.addCoset(BSFileReader.fileToArray(p, q, textField.getText().trim()), textField.getText().trim());
+                cosets.add(new Coset(BSFileReader.fileToArray(p, q, textField.getText().trim()), textField.getText().trim()));
             }
+
+            if (cosets.size() >= 2) {
+                direction = cosets.get(1).getDirection();
+            }
+
+            BSPane bsPane = new BSPane(p,q,direction);
+
+            bsPane.addCosets(cosets);
 
             Stage currentStage = (Stage) tfVbox.getScene().getWindow();
             currentStage.setScene(new Scene(bsPane, 800, 600));
             bsPane.drawBS();
-
-            //Scene mainScene = new Scene(bsPane, 700, 500);
-            //primaryStage.setScene(mainScene);
         }
         catch (IOException ex) {
             errorText.setText(ex.getMessage());

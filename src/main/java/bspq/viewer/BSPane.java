@@ -1,6 +1,6 @@
-package bspq.bsviewer;
+package bspq.viewer;
 
-import bspq.bspqtools.Coset;
+import bspq.tools.Coset;
 import javafx.geometry.Pos;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
@@ -65,7 +65,8 @@ public class BSPane extends BorderPane {
 
         Text bsInfo = new Text("p: " + p + "\nq: " + q);
         CheckBox indicesBox = new CheckBox("Show Indices");
-        TextField indexField = new TextField("Jump to index x");
+        TextField indexField = new TextField();
+        indexField.setPromptText("Jump to index x");
 
         topMenu.setSpacing(30);
         topMenu.setAlignment(Pos.CENTER);
@@ -122,7 +123,7 @@ public class BSPane extends BorderPane {
 
         if (direction) {
             // if up we start drawing the line towards the bottom
-            firstYLocation = getHeight() - 100;
+            firstYLocation = getHeight() - 150;
         }
         else {
             firstYLocation = 100;
@@ -174,32 +175,34 @@ public class BSPane extends BorderPane {
         }
         int arrayIndex = relativeIndex; // used so we don't increment relativeIndex or tickOffsetX
 
+
         Line line = new Line(0, lineY, widthProperty().doubleValue(), lineY);
 
         Text moveText = new Text(coset.getMoves().get(coset.getMoves().size() - 1));
         moveText.setY(lineY - (lineSpacing / 2));
         centerPane.getChildren().addAll(line, moveText);
 
-
         for (double i = tickOffsetX; i < widthProperty().doubleValue(); i += tickSpacing) {
-            Line tick = new Line(i, lineY - tickSize, i, lineY + tickSize);
-            Text number = new Text(String.valueOf(coordinates[arrayIndex]));
-            number.setX(i - number.getLayoutBounds().getWidth() / 2);
-            number.setY(lineY - 10);
-            centerPane.getChildren().addAll(tick, number);
+            if (arrayIndex >= 0 && arrayIndex < coordinates.length) {
+                Line tick = new Line(i, lineY - tickSize, i, lineY + tickSize);
+                Text number = new Text(String.valueOf(coordinates[arrayIndex]));
+                number.setX(i - number.getLayoutBounds().getWidth() / 2);
+                number.setY(lineY - 10);
+                centerPane.getChildren().addAll(tick, number);
 
-            // throw everything above in this if statement and offset the numbers to the left or right for visibility?
-            if ((arrayIndex - coset.getFirstZero()) % nextMod == 0 && showVerticalLine) { // connecting vertical lines
-                Line edge = new Line(i, lineY, i, lineY - lineSpacing); // line goes the opposite way the lines are being built
-                edge.setOpacity(.6);
-                centerPane.getChildren().add(edge);
-            }
+                // throw everything above in this if statement and offset the numbers to the left or right for visibility?
+                if ((arrayIndex - coset.getFirstZero()) % nextMod == 0 && showVerticalLine) { // connecting vertical lines
+                    Line edge = new Line(i, lineY, i, lineY - lineSpacing); // line goes the opposite way the lines are being built
+                    edge.setOpacity(.6);
+                    centerPane.getChildren().add(edge);
+                }
 
-            if (visibleIndex) {
-                Text absCount = new Text(String.valueOf(arrayIndex - coset.getFirstZero()));
-                absCount.setX(i - absCount.getLayoutBounds().getWidth() / 2);
-                absCount.setY(lineY + 20); // put index under the tick marks
-                centerPane.getChildren().add(absCount);
+                if (visibleIndex) {
+                    Text absCount = new Text(String.valueOf(arrayIndex - coset.getFirstZero()));
+                    absCount.setX(i - absCount.getLayoutBounds().getWidth() / 2);
+                    absCount.setY(lineY + 20); // put index under the tick marks
+                    centerPane.getChildren().add(absCount);
+                }
             }
             arrayIndex++;
         }
@@ -254,8 +257,7 @@ public class BSPane extends BorderPane {
         drawBS();
     }
 
-    public void addCoset(int[] rawArray, String path) {
-        // change to cosets calling the BSFileReader methods?
-        cosets.add(new Coset(rawArray, path));
+    public void addCosets(ArrayList<Coset> cosets) {
+        this.cosets.addAll(cosets);
     }
 }

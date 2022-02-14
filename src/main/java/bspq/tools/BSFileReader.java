@@ -10,7 +10,7 @@ BTTBT.bsp_q
 
  */
 
-package bspq.bspqtools;
+package bspq.tools;
 
 import java.io.*;
 import java.util.ArrayList;

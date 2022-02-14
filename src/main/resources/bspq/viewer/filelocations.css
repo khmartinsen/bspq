@@ -1,0 +1,6 @@
+.text-field {
+    -fx-padding: 5 10 5 10;
+    -fx-border-insets: 5 10 5 10;
+    -fx-background-insets: 5 10 5 10;
+    -fx-border-color: grey;
+}

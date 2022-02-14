@@ -9,7 +9,7 @@ Let 0 < p < q.
 
 This version includes lastRadiusPosition function at the end
 */
-package bspq.bspqtools;
+package bspq.tools;
 
 import java.io.File;
 import java.io.FileNotFoundException;

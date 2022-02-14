@@ -1,7 +1,7 @@
 plugins {
     id 'java'
     id 'application'
-    id 'org.openjfx.javafxplugin' version '0.0.10'
+    id 'org.openjfx.javafxplugin' version '0.0.11'
 }
 
 group 'bspq'
@@ -23,8 +23,8 @@ tasks.withType(JavaCompile) {
 }
 
 application {
-    mainModule = 'bspq.bspqtools'
-    mainClass = 'bspq.bspqtools.HelloApplication'
+    mainModule = 'bspq.viewer'
+    mainClass = 'bspq.viewer.BSViewer'
 }
 
 javafx {
