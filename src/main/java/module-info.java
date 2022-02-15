@@ -1,9 +1,8 @@
-module bspq.bspqtools {
+module bspq.viewer {
     requires javafx.controls;
     requires javafx.fxml;
 
 
     opens bspq.viewer to javafx.fxml;
-    exports bspq.tools;
     exports bspq.viewer;
 }
