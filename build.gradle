@@ -21,13 +21,20 @@ application {
 }
 
 javafx {
-    version = '17.0.1'
+    version = '17.0.2'
     modules = ['javafx.controls', 'javafx.fxml']
 }
 
 mainClassName = 'bspq.viewer.BSViewer'
 
 jlink {
+    targetPlatform("linux-x64") {
+        jdkHome = "G:\\Users\\zala\\.jdks\\openjdk-17.0.2_linux"
+        addExtraModulePath("G:\\Users\\zala\\.jdks\\javafx-jmods-17.0.2_linux")
+    }
+    targetPlatform("windows-x64") {
+        jdkHome = "G:\\Users\\zala\\.jdks\\openjdk-17.0.2"
+    }
     options = ['--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages']
     launcher {
         name = 'BSViewer'
