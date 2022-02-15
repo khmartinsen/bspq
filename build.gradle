@@ -30,7 +30,7 @@ mainClassName = 'bspq.viewer.BSViewer'
 jlink {
     options = ['--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages']
     launcher {
-        name = 'bspq.bsviewer'
+        name = 'BSViewer'
     }
 }
 
