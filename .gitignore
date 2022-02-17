@@ -1,0 +1,18 @@
+### Java ###
+*.class
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+### BSp_q data folders ###
+BS2_4/
+
+
+out/
+build/
+
+:.gradle
+
+*.lock
