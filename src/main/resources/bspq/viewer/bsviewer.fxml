@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
@@ -64,19 +65,20 @@
         <rowConstraints>
           <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
           <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <TextField fx:id="pEntry" maxWidth="60.0" prefWidth="60.0" promptText="p">
+            <TextField fx:id="pEntry" maxWidth="60.0" onAction="#updateDirectoryText" prefWidth="60.0" promptText="p">
                <GridPane.margin>
                   <Insets right="5.0" />
                </GridPane.margin>
             </TextField>
-            <TextField fx:id="qEntry" maxWidth="60.0" prefWidth="60.0" promptText="q" GridPane.rowIndex="1">
+            <TextField fx:id="qEntry" maxWidth="60.0" onAction="#updateDirectoryText" prefWidth="60.0" promptText="q" GridPane.rowIndex="1">
                <GridPane.margin>
                   <Insets right="5.0" />
                </GridPane.margin>
             </TextField>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Looking in directory BSp_q." GridPane.columnIndex="1">
+            <Text fx:id="directoryText" strokeType="OUTSIDE" strokeWidth="0.0" text="Data Dir.:" GridPane.columnIndex="1">
                <GridPane.margin>
                   <Insets left="10.0" />
                </GridPane.margin>
@@ -86,6 +88,16 @@
                   <Insets left="10.0" />
                </GridPane.margin>
             </Text>
+            <Button fx:id="directoryButton" mnemonicParsing="false" onAction="#chooseDirectory" text="Choose Directory" GridPane.columnIndex="1" GridPane.rowIndex="2">
+               <GridPane.margin>
+                  <Insets left="5.0" />
+               </GridPane.margin>
+            </Button>
+            <CheckBox fx:id="pqDirectoryCheckBox" mnemonicParsing="false" onAction="#updateDirectoryText" selected="true" text="Append BSp_q Directory" GridPane.rowIndex="2">
+               <padding>
+                  <Insets right="5.0" />
+               </padding>
+            </CheckBox>
          </children>
          <BorderPane.margin>
             <Insets top="20.0" />
