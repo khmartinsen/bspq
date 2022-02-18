@@ -153,7 +153,7 @@ public class BSPane extends BorderPane {
             // go the the next right edge
             int indexOffset = (((relativeIndex - cosets.get(i).getLastMoveOffset()) % currentMod) + currentMod) % currentMod; // non-negative value, distance to right horobrick edge
             relativeIndex = (int)((relativeIndex + indexOffset) * indexScaling); // relative starting point for the next line
-            tickOffsetX += (indexOffset + cosets.get(0).getLastMoveOffset()) * oldTickSpacing; // distance for that relative index to start at
+            tickOffsetX += (indexOffset + cosets.get(i).getLastMoveOffset()) * oldTickSpacing; // distance for that relative index to start at
 
             drawLines(lineY, tickSpacing, tickOffsetX, relativeIndex + cosets.get(i).getFirstZero(), cosets.get(i));
         }
