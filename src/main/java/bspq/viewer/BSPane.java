@@ -137,7 +137,6 @@ public class BSPane extends BorderPane {
         double tickOffsetX = 0.0;
         double indexScaling = 1.0;
         int relativeIndex = startIndex;
-        double lengthToEdge = 0.0;
 
         // draw the first line
         drawLines(lineY, tickSpacing, tickOffsetX, relativeIndex + cosets.get(0).getFirstZero(), cosets.get(0));
