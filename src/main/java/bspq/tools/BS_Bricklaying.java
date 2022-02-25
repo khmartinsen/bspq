@@ -14,6 +14,7 @@ package bspq.tools;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.util.Collections;
 import java.util.Scanner;
 
 public class BS_Bricklaying {
@@ -60,7 +61,7 @@ public class BS_Bricklaying {
                 printAccumulate(mainline, q);
                 break;
             case 2:
-                System.out.print("Enter a distance to calculate to: ");
+                System.out.print("Enter a distance (both directions from 0) to calculate to: ");
                 distance = input.nextInt();
                 input.nextLine(); // burn an input due
                 System.out.println("Default location is BS" + p + "_" + q + "/ in " + System.getProperty("user.dir"));
@@ -72,10 +73,12 @@ public class BS_Bricklaying {
                 }
 
                 File file = new File(directory + "/" + "mainline");
+                /*
                 if(!file.getParentFile().mkdir()) { // this may not be needed?
                     System.out.println("Could not create directory " + file.getParent());
                     System.exit(1);
                 }
+                */
 
                 if (file.exists()) {
                     System.out.println("File " + file.getName() + " already exists.");
@@ -107,7 +110,7 @@ public class BS_Bricklaying {
 
         // Round up to the next brick past maxPosition
         // This helps ensure we count correctly up to MaxPosition
-        int maxPosition = ((distance / q) + 1) * q;
+        int maxPosition = ((distance / q) + 1) * q; // move out of this function?
 
         int[] mainline = new int[maxPosition + 1];
         mainline[0] = 0;
@@ -135,8 +138,21 @@ public class BS_Bricklaying {
             interpolateWhile(mainline, i, i + q);
         }
 
-        int[] outputArray = new int[distance + 1];
-        System.arraycopy(mainline, 0, outputArray, 0, outputArray.length);
+        // output array is double the size to account for the left side
+        int[] outputArray = new int[2 * mainline.length + 1];
+        outputArray[0] = mainline.length - 1; // zero is located at this spot in the array
+        outputArray[1] = mainline.length - 1;
+
+        // now copy the mirror image of the right side of the zero to the left
+        /*
+        for (int i = 0; i < mainline.length; i++) {
+            outputArray[outputArray.length - 1 - i] = outputArray[i + 2] = mainline[mainline.length - 1 - i];
+        }
+        */
+
+        for (int i = 0; i < mainline.length; i++) {
+            outputArray[mainline.length + 1 - i] = outputArray[mainline.length + 1 + i] = mainline[i];
+        }
 
         return outputArray;
     }
@@ -244,9 +260,7 @@ public class BS_Bricklaying {
                 PrintWriter output = new PrintWriter(file);
                 )
         {
-            // first and last zero are at index 0 in the array
-            output.println(0);
-            output.println(0);
+            // pass the first/last zero position to then append to the data?
             for (int i : mainline) {
                 output.println(i);
             }

@@ -56,7 +56,7 @@ public class Controller {
             for (Node node: tfVbox.getChildren()) {
                 TextField textField = (TextField) node;
                 String move = textField.getText().trim();
-                cosets.add(new Coset(BSFileReader.fileToArray(move, directory + pqDirectory), move));
+                cosets.add(new Coset(BSFileReader.fileToArray(move + ".ri", directory + pqDirectory), move));
             }
 
             if (cosets.size() >= 2) {
