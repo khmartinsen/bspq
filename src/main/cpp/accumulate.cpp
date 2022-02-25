@@ -13,7 +13,8 @@ using namespace std;
 
 int main (int argc, char *argv[]) {
 
-	ifstream infile(argv[1]);
+	string file(argv[1]);
+	ifstream infile(file);
 	
 	map <int,long> count;
 	int number;
@@ -38,7 +39,13 @@ int main (int argc, char *argv[]) {
 
 	// print the counts
 	
+	file = file.substr(0, file.length() - 3);
+
+	ofstream outfile(file + ".ao");
+
 	for (auto const& x : count) {
-		cout << x.first << ", " << x.second << endl;
+		outfile << x.first << ", " << x.second << endl;
 	}
+
+	outfile.close();
 }
