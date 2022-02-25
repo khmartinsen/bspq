@@ -9,6 +9,8 @@
 // Feb 23, 2021 - Kevin Martinsen Modifications
 // BT<b> input to BTbt<b> output
 
+// code assumes there are data points around the relative 0 in the input file
+
 
 #include<iostream>
 #include<vector>
@@ -17,158 +19,133 @@
 #include<algorithm>
 using namespace std;
 
-void between(const int, const int, const int, const bool, vector<int>&);
 // must use a pointer to pass the vector argument
+void between(vector<int>&, const int); // change const bool to gap (p or q)
+int parseOffset(const string);
 
-int main() {
-    long i, size;
-    string line;
-    int p,q;
-    int offset, diff;
-    int initcond = 0; // offsets the output vector for moves that create a new intial condtion zone, left of the vector
-    bool up = true;
+int main(int argc, char *argv[]) {
+	if (argc <= 3) {
+		printf("Usage: cosetbuilder p q path.ri move\n");
+		printf("Outputs: path+move.ri\n");
+		printf("Example cosetbuilder 2 4 BT.ri BT outputs BTBT.ri\n");
+		return 0;
+	}
 
+	int p = atoi(argv[1]);
+	int q = atoi(argv[2]);
 
-    string inputFile, outputFile, move;
+	ifstream infile(argv[3]);
 
-    cout << "Input file name (with .input): ";
-    cin >> inputFile;
+	string startPath (argv[3]);
+	startPath = startPath.substr(0,startPath.length() - 3);
 
-    cout << "Output file name (with .input): ";
-    cin >> outputFile;
-    
-    cout << "Number for p: ";
-    cin >> p;
-    cout << "Number for q: ";
-    cin >> q;
-    
-    cout << "Input move: ";
-    cin >> move;
+	if (startPath == "mainline") {
+		startPath = "";
+	}
+	
+	string move = argv[4];
+	int offset = parseOffset(move);
+	int gap; // for between function
+	int mod; // for reading the input file
+	
+	if (move.at(move.length()-1) == 't') {
+			gap = p;
+			mod = q;
+	}
+	else if (move.at(move.length()-1) == 'T') {
+			gap = q;
+			mod = p;
+	}
+	else {
+		// invalid move
+		return 1;
+	}
 
-    // TODO make general instead of just BS2,4. Change to read the characters B or b and then a T or t.
-    if (move == "t") {
-	    offset = 0;
-	    diff = 0;
+	double scaling = (double)gap / (double)mod;
 
-    }
-    else if (move == "bt") {
-	    offset = 1;
-            diff = 1;
-    }
-   
-    else if (move == "bbt") {
-	    offset = 2;
-            diff = 2;
-	    initcond = 1;
-    }
-    
-    else if (move == "u") {
-	    offset = 2;
-            diff = 0;
-    }
-    
-    else if (move == "Bt") {
-	    offset = 3;
-            diff = 1;
-	    initcond = 1;
-    }
-    
-    else if (move == "T") {
-	    offset = 0;
-            diff = 0;
-	    up = false;
-    }
-    
-    else if (move == "BT") {
-	    offset = 1;
-            diff = 1;
-	    initcond = 1;
-	    up = false;
-    }
-    
-    else {
-	    cout << "Invalid move entered.\n";
-	    return 0;
-    }
-    
-    // Open input file for read
-    ifstream infile (inputFile); // user can edit this name
-    // Declare storage vector (normal arrays are too small)
-    vector<int> b(10000002); // user must know size in advance? 
+	// Read the input file
+	int firstZero;
+	infile >> firstZero;	
 
-    i = 0;
-    // Fill in the vector
-    while (! infile.eof()) {
-	getline (infile,line); // read the input numbers
-      	b[i] = atoi(line.c_str()); // must changed to int type, etc
-	i++;
-    }
+	vector<int> inputCoset; //preallocate?
+	
+	int coordinate;
+	infile >> coordinate; //burn the second input of the file, the location of the last zero	
 
-    size = i;
-    infile.close();
- 
-    // Declare vectors for the p adjacent lower cosets
-    vector<int> c(size);
-    c[0] = 0; // only used when initcond = 1
-    
-    if (up == true)
-    {
-	//going up a level, every q we go up and insert it every p in the resulting coset
-    	for (i=0; i<=size/q; i++) {
-	c[p*(i + initcond)] = b[q*i + offset] - diff;
-    	}	
-    
-    }
-    else 
-    {
-	// going down a level, every p we go down and insert it at every q in coset c
-    	for (i=0; i<=size/q; i++) {
-	c[q*(i + initcond)] = b[p*i + offset] - diff;
-    	}
+	while (infile >> coordinate) {
+			inputCoset.push_back(coordinate);
+	}
+	infile.close();
 
-    }
+	int startIndex = (firstZero + offset + mod) % mod; //could give a negative start index
 
-    between(p,q,size,up,c); // 4th input is true for lowercase t up
-    // Write the vectors containing geodesic lengths
-    // to the appropriate output files
-    ofstream outfile; 
-    outfile.open (outputFile);
-    for (i=0; i<c.size(); i++ ) {
-	outfile << c[i] << "\n";
-    }
-    outfile.close();
-    
-    return 0;
+	int outputSize = ((inputCoset.size() - startIndex) / mod) * gap + 1;
+	//int outputSize = (int)((inputCoset.size() - 1) * scaling + 1);
+	
+	// is there a better way to make sure we dont create something too big or just max out the vector size every time?
+
+	/*
+	if (outputSize > inputCoset.max_size() || outputSize <= 0) {
+		outputSize = inputCoset.max_size();
+	}
+	*/
+
+	vector<int> outputCoset(outputSize); //size scale like p/q or q/p
+
+	int diff;
+	if (firstZero + offset < 0) {
+		diff = -offset;
+	}
+	else {
+		diff = inputCoset[firstZero + offset]; //assuming that is non-negative, maybe we can guarantee that?
+	}
+
+	for (int i = startIndex, j = 0; i < inputCoset.size(), j < outputCoset.size(); i+=mod, j+=gap) { // && start < outputCoset?
+		outputCoset[j] = inputCoset[i] - diff;
+	}
+
+	// between function
+	between(outputCoset, gap);
+	// output to file
+	ofstream outfile(startPath + move + ".ri");
+
+	firstZero = ((firstZero - offset) / mod) * gap;
+
+	
+	// ADD first zero and last zero location
+	outfile << firstZero << "\n";
+	outfile << firstZero << "\n"; //placeholder
+
+	for (int i = 0; i < outputCoset.size(); i++) {
+			outfile << outputCoset[i] << "\n";
+	}	
+
+	outfile.close();
+
+	return 0;
 }
 
-// Function to compute the geodesic lengths in between 
-// the vertices already found.
-void between(const int p, const int q, const int size, const bool t, vector<int>& k) {
-    // Given all the geodesic lengths from the input coset K,
-    // and the geodesic lengths for some of the vertices on
-    // a coset immediately "below" K, let v be a vertex on
-    // such a coset "below" K. A geodesic path for v
-    // comes from either the left or right
-    // so we calculate each length and choose
-    // the shorter path length
-    
-    // True is going up (little t), false is going down (capital T)
-    int gap;
+// fills in the coordinates between two horobrick edges
+// needs to be smarter!
+void between(vector<int>& coset, const int gap) {
+	int i;
+	int j;
+	for (i=0; i < coset.size() - gap; i+=gap) {
+		for (j=1; j<gap; j++) {
+			if (coset[i]+j < coset[i+gap]+gap-j)
+				coset[i+j] = coset[i]+j;
+			else
+				coset[i+j] = coset[i+gap]+gap-j;
+		}
+    }
+}
 
-    if (t == true) {
-        gap = p;
-    } else {
-	gap = q;
-    }
- 
-    long i;
-    int j;
-    for (i=0; i<size-gap; i+=gap) {
-	for (j=1; j<gap; j++) {
-	    if (k[i]+j < k[i+gap]+gap-j)
-		k[i+j] = k[i]+j;
-	    else
-		k[i+j] = k[i+gap]+gap-j;
+
+int parseOffset(const string move) {
+	int offset = 0;
+	for (int i = 0; i < move.length(); i++) {
+		if (move.at(i) == 'b') { offset++; }
+		else if (move.at(i) == 'B') { offset--; }
 	}
-    }
+	return offset;
 }

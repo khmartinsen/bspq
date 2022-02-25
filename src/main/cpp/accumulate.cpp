@@ -1,5 +1,8 @@
 /*
  * Simple accumulate function with commandline usage
+ *
+ * could try using an ordered map and then sorting it at the end
+ * or a more clever solution where we have an array with an appropriate size
 */
 
 #include<iostream>
