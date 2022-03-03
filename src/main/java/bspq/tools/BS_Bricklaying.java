@@ -13,6 +13,7 @@ package bspq.tools;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.Scanner;
@@ -20,8 +21,22 @@ import java.util.Scanner;
 public class BS_Bricklaying {
     public static void main(String[] args) {
         // Add system args option and default to userMenu
-
-        userMenu();
+        if (args.length == 3) {
+            try {
+                int p = Integer.parseInt(args[0]);
+                int q = Integer.parseInt(args[1]);
+                int distance = Integer.parseInt(args[2]);
+                int[] mainline = brickLaying(p, q, distance);
+                File outputFile = new File("mainline.ri");
+                writeToFile(mainline, outputFile);
+            }
+            catch (NumberFormatException ex) {
+                System.out.println("Invalid p or q. Must be integers.");
+            }
+        }
+        else {
+            userMenu();
+        }
     }
 
     public static void userMenu() {
