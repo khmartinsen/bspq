@@ -21,7 +21,7 @@ the sheet will display the data going down from the BT.
 ## Brick Laying Algorithm
 This program creates the initial coset mainline for the group based on p and q.\
 Usage: `./bricklaying p q distance` \
-Outputs: `mainline.ri` \
+Outputs: `mainline.ri`  \
 Where distance is an integer value from the relative zero to the end of the data. However distance will increase to the next multiple of q.
 The output data is symmetrical
 
