@@ -5,7 +5,6 @@ import java.util.Arrays;
 
 public class Coset {
     final int firstZero;
-    final int lastZero;
     final int[] coordinates;
     String path;
     ArrayList<String> moves = new ArrayList<>();
@@ -15,8 +14,7 @@ public class Coset {
 
     public Coset(int[] array, String path) {
         firstZero = array[0];
-        lastZero = array[1];
-        coordinates = Arrays.copyOfRange(array, 2, array.length);
+        coordinates = Arrays.copyOfRange(array, 1, array.length);
         this.path = path;
 
         if (path.equals("mainline")) {
@@ -39,10 +37,6 @@ public class Coset {
 
     public int getFirstZero() {
         return firstZero;
-    }
-
-    public int getLastZero() {
-        return lastZero;
     }
 
     public int[] getCoordinates() {

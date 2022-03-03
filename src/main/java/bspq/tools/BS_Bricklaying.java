@@ -22,11 +22,6 @@ public class BS_Bricklaying {
         // Add system args option and default to userMenu
 
         userMenu();
-
-        //accumulate and print
-        //int[] count = accumulate(mainline, findLargestRadius(mainline, q, countToPosition));
-        //System.out.print(java.util.Arrays.toString(mainline));
-        //System.out.println("");
     }
 
     public static void userMenu() {
@@ -73,12 +68,6 @@ public class BS_Bricklaying {
                 }
 
                 File file = new File(directory + "/" + "mainline");
-                /*
-                if(!file.getParentFile().mkdir()) { // this may not be needed?
-                    System.out.println("Could not create directory " + file.getParent());
-                    System.exit(1);
-                }
-                */
 
                 if (file.exists()) {
                     System.out.println("File " + file.getName() + " already exists.");
@@ -141,14 +130,6 @@ public class BS_Bricklaying {
         // output array is double the size to account for the left side
         int[] outputArray = new int[2 * mainline.length + 1];
         outputArray[0] = mainline.length - 1; // zero is located at this spot in the array
-        outputArray[1] = mainline.length - 1;
-
-        // now copy the mirror image of the right side of the zero to the left
-        /*
-        for (int i = 0; i < mainline.length; i++) {
-            outputArray[outputArray.length - 1 - i] = outputArray[i + 2] = mainline[mainline.length - 1 - i];
-        }
-        */
 
         for (int i = 0; i < mainline.length; i++) {
             outputArray[mainline.length + 1 - i] = outputArray[mainline.length + 1 + i] = mainline[i];
@@ -173,7 +154,6 @@ public class BS_Bricklaying {
                 mainline[end - moveRight - 1] = mainline[end - moveRight] + 1;
                 moveRight++;
             }
-            //System.out.println(start + moveLeft + 1 + " " + (end - moveRight));
         }
     }
 

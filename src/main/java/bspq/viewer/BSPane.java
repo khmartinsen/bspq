@@ -64,7 +64,7 @@ public class BSPane extends BorderPane {
         setCenter(centerPane);
 
         Text bsInfo = new Text("p: " + p + "\nq: " + q);
-        CheckBox indicesBox = new CheckBox("Show Indices");
+        CheckBox indicesBox = new CheckBox("Show Horocyclic Indices");
         TextField indexField = new TextField();
         indexField.setPromptText("Jump to index x");
 
@@ -121,8 +121,8 @@ public class BSPane extends BorderPane {
 
         setTranslateX(30); // change based on max label size like BBT
 
+	//first line location
         if (direction) {
-            // if up we start drawing the line towards the bottom
             firstYLocation = getHeight() - 150;
         }
         else {
@@ -142,7 +142,7 @@ public class BSPane extends BorderPane {
         drawLines(lineY, tickSpacing, tickOffsetX, relativeIndex + cosets.get(0).getFirstZero(), cosets.get(0));
 
         // draw the next lines
-        for (int i = 1; i < cosets.size(); i++) { // change to int i and use zeroLocation and other arrays
+        for (int i = 1; i < cosets.size(); i++) {
             lineY += lineSpacing;
             oldTickSpacing = tickSpacing;
             tickSpacing *= tickSpacingScaling;
@@ -156,6 +156,8 @@ public class BSPane extends BorderPane {
 
             drawLines(lineY, tickSpacing, tickOffsetX, relativeIndex + cosets.get(i).getFirstZero(), cosets.get(i));
         }
+
+        requestFocus();
     }
 
     private void drawLines(final double lineY, final double tickSpacing, double tickOffsetX,int relativeIndex, Coset coset) {
