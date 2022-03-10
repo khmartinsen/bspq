@@ -32,5 +32,9 @@ jlink {
     launcher {
         name = 'BSViewer'
     }
+    secondaryLauncher {
+        name = 'Bricklaying'
+        mainClass = 'bspq.tools.Bricklaying'
+    }
 }
 

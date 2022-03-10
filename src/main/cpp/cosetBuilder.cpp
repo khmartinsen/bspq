@@ -14,8 +14,8 @@ vector<string> parsePath(const string);
 
 int main(int argc, char *argv[]) {
 	if (argc <= 3) {
-		printf("Usage: cosetbuilder p q startPath moves\n");
-		printf("Outputs: path+move.ri\n");
+		printf("Usage: cosetbuilder p q path moves\n");
+		printf("Outputs: path+firstmove.ri iterately to path+moves.ri\n");
 		printf("Example: cosetbuilder 2 4 BTbbt BT -> BTbbtBT.ri\n");
 		return 0;
 	}

@@ -18,14 +18,14 @@ import java.util.Scanner;
 
 public class Bricklaying {
     public static void main(String[] args) {
-        // Add system args option and default to userMenu
-        if (args.length == 3) {
+        if (args.length == 4) {
             try {
                 int p = Integer.parseInt(args[0]);
                 int q = Integer.parseInt(args[1]);
                 int distance = Integer.parseInt(args[2]);
+                String directory = args[3];
                 int[] mainline = brickLaying(p, q, distance);
-                File outputFile = new File("mainline.ri");
+                File outputFile = new File(directory + "/mainline.ri");
                 writeToFile(mainline, outputFile);
             }
             catch (NumberFormatException ex) {
@@ -33,6 +33,7 @@ public class Bricklaying {
             }
         }
         else {
+            // remove userMenu, not needed now
             userMenu();
         }
     }
