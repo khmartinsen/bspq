@@ -13,12 +13,10 @@ package bspq.tools;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Collections;
 import java.util.Scanner;
 
-public class BS_Bricklaying {
+public class Bricklaying {
     public static void main(String[] args) {
         // Add system args option and default to userMenu
         if (args.length == 3) {
