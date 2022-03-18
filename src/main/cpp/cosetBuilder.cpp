@@ -89,7 +89,7 @@ int main(int argc, char *argv[]) {
 		// if the output size is at the max then the start array needs to be further in so the data is symmetrical
 		// maybe it starts at 1000 blocks into the data, or we need to be using multiple arrays to go past the max
 		int startIndex = (firstZero + offset + inputGap) % inputGap;
-		int outputSize = ((inputCoset.size() - startIndex) / inputGap) * outputGap + 1; // what if its bigger than int?
+		int outputSize = ((inputCoset.size() - startIndex - 1) / inputGap) * outputGap + 1; // what if its bigger than int?
 		vector<int> outputCoset(outputSize); //size scale like p/q or q/p
 
 		int diff;
@@ -101,7 +101,7 @@ int main(int argc, char *argv[]) {
 		}
 
 		// iterate over the horobrick edges from the input coset to the output coset
-		for (int i = startIndex, j = 0; i < inputCoset.size(), j < outputCoset.size(); i+=inputGap, j+=outputGap) {
+		for (int i = startIndex, j = 0; i < inputCoset.size() && j < outputCoset.size(); i+=inputGap, j+=outputGap) {
 			outputCoset[j] = inputCoset[i] - diff;
 		}
 
