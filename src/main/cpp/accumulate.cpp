@@ -14,7 +14,7 @@ using namespace std;
 int main (int argc, char *argv[]) {
 
 	string file(argv[1]);
-	ifstream infile(file + ".ao");
+	ifstream infile(file + ".ri");
 	
 	map <int,long> count;
 	int number;
@@ -44,7 +44,7 @@ int main (int argc, char *argv[]) {
 	ofstream outfile(file + ".ao");
 
 	for (auto const& x : count) {
-		outfile << x.first << ", " << x.second << endl;
+		outfile << x.second << ", " << endl;
 	}
 
 	outfile.close();

@@ -14,7 +14,6 @@ DIR=$(pwd)
 
 OUT=${DIR}/data/$OUT
 
-echo $OUT
 
 #runs coset builder in another shell since we change the directory
 builder() {
@@ -27,9 +26,9 @@ accumulate() {
 
 # writes the coset name followed by the data then starts a new line
 writeCSV() {
-	echo -n $1 > $OUT 
-	cat ${1}.ao > $OUT
-	echo > $OUT
+	echo -n $1 >> $OUT 
+	cat ${1}.ao >> $OUT
+	echo >> $OUT
 }
 
 cd data/BS${P}_${Q}
