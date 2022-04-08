@@ -1,10 +1,20 @@
 #!/usr/bin/env bash
 
-# usage: bspqscript p q
-echo "BSPQ master script"
-P=$1
-Q=$2
+echo "BSPQ Accumulate CSV Creator"
+echo -n "Enter p: "
+read P
+echo -n "Enter q: "
+read Q
+echo -n "Enter output file name: "
+read OUT
+echo -n "Enter cosets:"
+read COSETS
+
 DIR=$(pwd)
+
+OUT=${DIR}/data/$OUT
+
+echo $OUT
 
 #runs coset builder in another shell since we change the directory
 builder() {
@@ -12,10 +22,27 @@ builder() {
 }
 
 accumulate() {
-  ${DIR}/bin/accumulate #1
+  ${DIR}/bin/accumulate $1
+}
+
+# writes the coset name followed by the data then starts a new line
+writeCSV() {
+	echo -n $1 > $OUT 
+	cat ${1}.ao > $OUT
+	echo > $OUT
 }
 
 cd data/BS${P}_${Q}
 
-builder mainline BTBT
-
+for C in $COSETS; do
+	if [[ -f ${C}.ao ]]; then
+		writeCSV $C
+	elif [[ -f ${C}.ri ]]; then
+		accumulate $C
+		writeCSV $C
+	else 
+		builder mainline $C
+		accumulate $C
+		writeCSV $C
+	fi
+done

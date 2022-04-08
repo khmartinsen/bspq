@@ -14,7 +14,7 @@ using namespace std;
 int main (int argc, char *argv[]) {
 
 	string file(argv[1]);
-	ifstream infile(file);
+	ifstream infile(file + ".ao");
 	
 	map <int,long> count;
 	int number;
