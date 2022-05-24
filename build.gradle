@@ -27,6 +27,28 @@ javafx {
 
 mainClassName = 'bspq.viewer.BSViewer'
 
+
+def JLINK_DIR = "$buildDir/image"
+
+tasks.jlink.doLast {
+    copy {
+        from("src/main/cpp/") {
+            include "accumulate.cpp", "cosetBuilder.cpp"
+        }
+        into JLINK_DIR + "/bin/"
+    }
+
+    copy {
+        from(".") {
+            include "README.md"
+        }
+        from("src/main") {
+            include "bspqscript.sh"
+        }
+        into JLINK_DIR
+    }
+}
+
 jlink {
     options = ['--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages']
     launcher {
