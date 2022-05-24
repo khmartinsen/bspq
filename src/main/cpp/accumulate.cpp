@@ -13,14 +13,14 @@ using namespace std;
 
 int main (int argc, char *argv[]) {
 
-	string file(argv[1]);
+	const string file(argv[1]);
 	ifstream infile(file + ".ri");
 	
 	map <int,long> count;
 	int number;
 
-	// first two lines are the location of the first and last zero
-	infile >> number >> number;
+	// first number is the location of the zero
+	infile >> number;
 
 	while (infile >> number) {
 		// skip negative numbers (only produced in error)	
@@ -38,13 +38,10 @@ int main (int argc, char *argv[]) {
 	infile.close();
 
 	// print the counts
-	
-	file = file.substr(0, file.length() - 3);
-
 	ofstream outfile(file + ".ao");
 
 	for (auto const& x : count) {
-		outfile << x.second << ", " << endl;
+		outfile << x.second << ", ";
 	}
 
 	outfile.close();

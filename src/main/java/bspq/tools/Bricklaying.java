@@ -18,14 +18,14 @@ import java.util.Scanner;
 
 public class Bricklaying {
     public static void main(String[] args) {
-        if (args.length == 4) {
+        // Usage: Bricklaying p q distance
+        if (args.length == 3) {
             try {
                 int p = Integer.parseInt(args[0]);
                 int q = Integer.parseInt(args[1]);
                 int distance = Integer.parseInt(args[2]);
-                String directory = args[3];
                 int[] mainline = brickLaying(p, q, distance);
-                File outputFile = new File(directory + "/mainline.ri");
+                File outputFile = new File("mainline.ri");
                 writeToFile(mainline, outputFile);
             }
             catch (NumberFormatException ex) {
@@ -73,15 +73,9 @@ public class Bricklaying {
                 System.out.print("Enter a distance (both directions from 0) to calculate to: ");
                 distance = input.nextInt();
                 input.nextLine(); // burn an input due
-                System.out.println("Default location is BS" + p + "_" + q + "/ in " + System.getProperty("user.dir"));
-                System.out.print("Enter a directory (without /) or press enter for default: ");
-                String directory = input.nextLine().trim();
+                System.out.println("Default location is " + System.getProperty("user.dir"));
 
-                if (directory.isEmpty()) {
-                    directory = "BS" + p + "_" + q;
-                }
-
-                File file = new File(directory + "/" + "mainline");
+                File file = new File("mainline.ri");
 
                 if (file.exists()) {
                     System.out.println("File " + file.getName() + " already exists.");
@@ -109,11 +103,10 @@ public class Bricklaying {
 
     public static int[] brickLaying(final int p, final int q, final int distance) {
         // The main algorithm for building the mainline/horocyclic subgroup for BS(p,q)
-        // returns the main line up to given distance
 
         // Round up to the next brick past maxPosition
         // This helps ensure we count correctly up to MaxPosition
-        int maxPosition = ((distance / q) + 1) * q; // move out of this function?
+        int maxPosition = ((distance / q) + 1) * q;
 
         int[] mainline = new int[maxPosition + 1];
         mainline[0] = 0;
@@ -142,11 +135,11 @@ public class Bricklaying {
         }
 
         // output array is double the size to account for the left side
-        int[] outputArray = new int[2 * mainline.length + 1];
-        outputArray[0] = mainline.length - 1; // zero is located at this spot in the array
+        int[] outputArray = new int[2 * mainline.length - 1];
+        //outputArray[0] = mainline.length - 1; // zero is located at this spot in the array
 
         for (int i = 0; i < mainline.length; i++) {
-            outputArray[mainline.length + 1 - i] = outputArray[mainline.length + 1 + i] = mainline[i];
+            outputArray[mainline.length - 1 - i] = outputArray[mainline.length - 1 + i] = mainline[i];
         }
 
         return outputArray;
@@ -254,7 +247,7 @@ public class Bricklaying {
                 PrintWriter output = new PrintWriter(file);
                 )
         {
-            // pass the first/last zero position to then append to the data?
+            output.println(mainline.length / 2);
             for (int i : mainline) {
                 output.println(i);
             }

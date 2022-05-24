@@ -15,6 +15,10 @@ DIR=$(pwd)
 OUT=${DIR}/data/$OUT
 
 
+bricklaying() {
+  ${DIR}/bin/Bricklaying $P $Q 100000
+}
+
 #runs coset builder in another shell since we change the directory
 builder() {
   ${DIR}/bin/cosetBuilder $P $Q $1 $2
@@ -26,7 +30,7 @@ accumulate() {
 
 # writes the coset name followed by the data then starts a new line
 writeCSV() {
-	echo -n $1 >> $OUT 
+	echo -n $1, >> $OUT
 	cat ${1}.ao >> $OUT
 	echo >> $OUT
 }
@@ -39,7 +43,9 @@ for C in $COSETS; do
 	elif [[ -f ${C}.ri ]]; then
 		accumulate $C
 		writeCSV $C
-	else 
+	else
+	  if [[ -f mainline.ri ]]; then
+	    bricklaying
 		builder mainline $C
 		accumulate $C
 		writeCSV $C
