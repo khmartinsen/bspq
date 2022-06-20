@@ -30,12 +30,17 @@ public class BSViewer extends Application {
         launch(args);
     }
 
+    private static Scene menuScene;
+
+    public static Scene getMenuScene() { return menuScene; }
+
     @Override
     public void start(Stage primaryStage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("bsviewer.fxml"));
-        Scene menuScene = new Scene(fxmlLoader.load());
+        menuScene = new Scene(fxmlLoader.load());
 
         primaryStage.setScene(menuScene);
+        primaryStage.setTitle("BSPQ Viewer");
         primaryStage.show();
     }
 }

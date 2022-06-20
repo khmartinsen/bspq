@@ -2,6 +2,8 @@ package bspq.viewer;
 
 import bspq.tools.Coset;
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
@@ -9,6 +11,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 
 import java.util.ArrayList;
 
@@ -67,10 +70,11 @@ public class BSPane extends BorderPane {
         CheckBox indicesBox = new CheckBox("Show Horocyclic Indices");
         TextField indexField = new TextField();
         indexField.setPromptText("Jump to index x");
+        Button returnBt = new Button("Return to Menu");
 
         topMenu.setSpacing(30);
         topMenu.setAlignment(Pos.CENTER);
-        topMenu.getChildren().addAll(bsInfo, indicesBox, indexField);
+        topMenu.getChildren().addAll(bsInfo, indicesBox, indexField, returnBt);
 
         // handlers and listeners
 
@@ -89,6 +93,12 @@ public class BSPane extends BorderPane {
                 indexField.setPromptText("Invalid Number");
                 requestFocus();
             }
+        });
+
+        returnBt.setOnAction(e -> {
+            Stage currentStage = (Stage) returnBt.getScene().getWindow();
+            currentStage.setScene(BSViewer.getMenuScene());
+            this.getChildren().clear();
         });
 
         // zoom in by changing the tick spacing with scroll wheel
@@ -179,7 +189,12 @@ public class BSPane extends BorderPane {
 
         Line line = new Line(0, lineY, widthProperty().doubleValue(), lineY);
 
-        Text moveText = new Text(coset.getMoves().get(coset.getMoves().size() - 1));
+        Text moveText;
+
+        // if its the first coset write the whole name
+        if (coset == this.cosets.get(0)) moveText = new Text(coset.getPath());
+        else moveText = new Text(coset.getMoves().get(coset.getMoves().size() - 1));
+
         moveText.setY(lineY - (lineSpacing / 2));
         centerPane.getChildren().addAll(line, moveText);
 

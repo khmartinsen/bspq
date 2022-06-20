@@ -12,7 +12,6 @@ import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -24,10 +23,8 @@ public class Controller {
     @FXML Text directoryText;
     @FXML CheckBox pqDirectoryCheckBox;
 
-    private String directory = System.getenv("BS_DATA");
+    private String directory = "../data";
     private String pqDirectory = "";
-    // add Scene bsPaneScene so we can swap back and forth
-
 
     @FXML
     private void addRow() {
@@ -64,7 +61,6 @@ public class Controller {
             }
 
             BSPane bsPane = new BSPane(p,q,direction);
-
             bsPane.addCosets(cosets);
 
             Stage currentStage = (Stage) tfVbox.getScene().getWindow();
