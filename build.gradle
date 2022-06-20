@@ -28,7 +28,7 @@ javafx {
 mainClassName = 'bspq.viewer.BSViewer'
 
 
-def JLINK_DIR = "$buildDir/image"
+def JLINK_DIR = "$buildDir/bspqtools"
 
 tasks.jlink.doLast {
     copy {
@@ -58,5 +58,7 @@ jlink {
         name = 'Bricklaying'
         mainClass = 'bspq.tools.Bricklaying'
     }
+
+    imageName = "bspqtools"
 }
 

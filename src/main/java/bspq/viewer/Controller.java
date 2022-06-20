@@ -12,6 +12,7 @@ import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -23,7 +24,9 @@ public class Controller {
     @FXML Text directoryText;
     @FXML CheckBox pqDirectoryCheckBox;
 
-    private String directory = "../data";
+    // assuming running outside of bin directory at the bspqscript level
+    private String directory = System.getProperty("user.dir") + "/data";
+
     private String pqDirectory = "";
 
     @FXML
