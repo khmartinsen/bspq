@@ -35,6 +35,7 @@ writeCSV() {
 	echo >> $OUT
 }
 
+mkdir -p data/BS${P}_${Q}
 cd data/BS${P}_${Q}
 
 for C in $COSETS; do
@@ -44,8 +45,9 @@ for C in $COSETS; do
 		accumulate $C
 		writeCSV $C
 	else
-	  if [[ -f mainline.ri ]]; then
+	  if [[ ! -f mainline.ri ]]; then
 	    bricklaying
+	  fi
 		builder mainline $C
 		accumulate $C
 		writeCSV $C
